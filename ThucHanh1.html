@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Câu 1 - Trung bình cộng số lẻ ở vị trí chẵn</title>
+</head>
+<body>
+  <h2>Nhập mảng số nguyên</h2>
+  <label for="soLuong">Số phần tử (1-50):</label>
+  <input type="number" id="soLuong" min="1" max="50"><br><br>
+
+  <div id="nhapMang"></div>
+
+  <button onclick="taoONhap()">Tạo ô nhập</button>
+  <button onclick="tinhTBC()">Tính trung bình cộng</button>
+
+  <h3>Kết quả:</h3>
+  <p id="mangHienThi"></p>
+  <p id="ketQua"></p>
+
+  <script>
+    function taoONhap() {
+      const soLuong = parseInt(document.getElementById("soLuong").value);
+      const nhapMangDiv = document.getElementById("nhapMang");
+      nhapMangDiv.innerHTML = "";
+
+      if (isNaN(soLuong) || soLuong < 1 || soLuong > 50) {
+        alert("Vui lòng nhập số phần tử hợp lệ (1-50).");
+        return;
+      }
+
+      for (let i = 0; i < soLuong; i++) {
+        nhapMangDiv.innerHTML += `Phần tử ${i + 1}: <input type="number" id="pt${i}"><br>`;
+      }
+    }
+
+    function tinhTBC() {
+      const soLuong = parseInt(document.getElementById("soLuong").value);
+      let arr = [];
+
+      for (let i = 0; i < soLuong; i++) {
+        const val = parseInt(document.getElementById(`pt${i}`).value);
+        if (isNaN(val)) {
+          alert(`Phần tử thứ ${i + 1} không hợp lệ.`);
+          return;
+        }
+        arr.push(val);
+      }
+
+      document.getElementById("mangHienThi").innerText = "Mảng vừa nhập: " + arr.join(", ");
+
+      let tong = 0;
+      let dem = 0;
+      for (let i = 0; i < arr.length; i += 2) {
+        if (arr[i] % 2 !== 0) {
+          tong += arr[i];
+          dem++;
+        }
+      }
+
+      if (dem === 0) {
+        document.getElementById("ketQua").innerText = "Không có số lẻ ở vị trí chẵn.";
+      } else {
+        let tbc = tong / dem;
+        document.getElementById("ketQua").innerText = `Trung bình cộng các số lẻ ở vị trí chẵn là: ${tbc}`;
+      }
+    }
+  </script>
+</body>
+</html>
