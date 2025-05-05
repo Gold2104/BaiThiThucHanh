@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quản lí sách</title>
+  <style>
+    table, th, td { border: 1px solid black; border-collapse: collapse; }
+    th, td { padding: 8px; }
+    button { margin: 5px; padding: 5px 10px; }
+  </style>
+</head>
+<body>
+  <h2>Quản lí sách</h2>
+
+  <!-- Bảng hiển thị sách -->
+  <table id="bookTable">
+    <thead>
+      <tr>
+        <th>Mã số sách</th>
+        <th>Tên sách</th>
+        <th>Năm xuất bản</th>
+        <th>Số quyển</th>
+        <th>Tình trạng</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <br>
+  <!-- Nút chức năng -->
+  <button onclick="addExistingBook()">Thêm sách đã có</button>
+  <button onclick="addBook()">Thêm sách mới</button>
+  <button onclick="borrowBook()">Mượn sách</button>
+  <button onclick="showMostCopies()">Hiển thị sách nhiều nhất</button>
+
+  <script>
+    const books = [
+      { id: "12345", name: "Toán", year: 2000, quantity: 3, status: true },
+      { id: "23456", name: "Văn", year: 1998, quantity: 4, status: true },
+      { id: "37456", name: "Tiếng Anh", year: 1999, quantity: 5, status: false }
+    ];
+
+    function renderBooks() {
+      const tbody = document.querySelector("#bookTable tbody");
+      tbody.innerHTML = "";
+      books.forEach(book => {
+        const row = `<tr>
+          <td>${book.id}</td>
+          <td>${book.name}</td>
+          <td>${book.year}</td>
+          <td>${book.quantity}</td>
+          <td>${book.status}</td>
+        </tr>`;
+        tbody.innerHTML += row;
+      });
+    }
+
+    function validateBookId(id) {
+      return /^[1-5][0-9]{4}$/.test(id);
+    }
+
+    // Thêm sách mới
+    function addBook() {
+      const id = prompt("Nhập mã số sách:");
+      if (!validateBookId(id)) return alert("Mã sách không hợp lệ!");
+      if (books.some(b => b.id === id)) return alert("Sách đã tồn tại! Dùng nút 'Thêm sách đã có'.");
+
+      const name = prompt("Nhập tên sách:");
+
+      // Kiểm tra năm xuất bản
+      let year;
+      do {
+        year = parseInt(prompt("Năm xuất bản (4 chữ số):"), 10);
+        if (isNaN(year) || year < 1000 || year > 9999) {
+          alert("Năm không hợp lệ! Vui lòng nhập lại.");
+        }
+      } while (isNaN(year) || year < 1000 || year > 9999);
+
+      // Kiểm tra số quyển
+      let quantity;
+      do {
+        quantity = parseInt(prompt("Nhập số quyển:"), 10);
+        if (isNaN(quantity) || quantity < 0) {
+          alert("Số quyển không hợp lệ! Vui lòng nhập lại.");
+        }
+      } while (isNaN(quantity) || quantity < 0);
+
+      books.push({ id, name, year, quantity, status: quantity > 0 });
+      alert("Thêm sách mới thành công!");
+      renderBooks();
+    }
+
+    // Thêm số quyển cho sách đã có
+    function addExistingBook() {
+      const id = prompt("Nhập mã số sách đã có:");
+      const book = books.find(b => b.id === id);
+      if (!book) return alert("Không tìm thấy sách!");
+
+      const addQty = parseInt(prompt("Nhập số quyển muốn thêm:"), 10);
+      if (isNaN(addQty) || addQty <= 0) return alert("Số quyển không hợp lệ!");
+
+      book.quantity += addQty;
+      book.status = true; // Có thêm sách thì trạng thái phải là true
+      alert("Đã cập nhật số quyển cho sách.");
+      renderBooks();
+    }
+
+    // Mượn sách
+    function borrowBook() {
+      const id = prompt("Nhập mã số sách cần mượn:");
+      const book = books.find(b => b.id === id);
+      if (!book) return alert("Không tìm thấy sách!");
+
+      if (book.quantity > 0) {
+        book.quantity--;
+        if (book.quantity === 0) book.status = false;
+        alert("Mượn thành công!");
+      } else {
+        alert("Không còn quyển nào để mượn!");
+      }
+
+      renderBooks();
+    }
+
+    // Hiển thị sách nhiều nhất
+    function showMostCopies() {
+      if (books.length === 0) return alert("Không có sách nào.");
+      const max = Math.max(...books.map(b => b.quantity));
+      const most = books.filter(b => b.quantity === max);
+
+      let msg = "Sách có nhiều quyển nhất:\n";
+      most.forEach(b => {
+        msg += `- ${b.name} (${b.quantity} quyển)\n`;
+      });
+
+      alert(msg);
+    }
+
+    // Hiển thị ban đầu
+    renderBooks();
+  </script>
+</body>
+</html>
